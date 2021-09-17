@@ -26,7 +26,7 @@ public class PingController : Controller
 
             if (database != null)
             {
-                return Ok();
+                return Ok(System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
             }
             return BadRequest();
 
