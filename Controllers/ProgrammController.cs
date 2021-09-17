@@ -13,7 +13,7 @@ namespace my_nomination_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   // [EnableCors("MyPolicy")]
+    [EnableCors("MyPolicy")]
     public class ProgrammController : Controller
     {
         private readonly NominationService _nominationService;
