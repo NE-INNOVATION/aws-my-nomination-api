@@ -55,7 +55,6 @@ namespace my_nomination_api.Controllers
 
         [HttpGet]
         [Route("GetProgramsById")]
-        [Authorize]
         public NominationProgram GetProgramsById([FromQuery] string programId)
         {
            return _nominationService.GetProgramById(programId);
