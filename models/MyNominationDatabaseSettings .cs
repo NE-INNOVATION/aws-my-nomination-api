@@ -12,6 +12,12 @@ namespace my_nomination_api.models
         public string NominationsCollectionName { get; set; }
 
         public string ProgramCategoryCollectionName { get; set; }
+
+        public string RegionCategoryCollectionName { get; set; }
+        public string UserRegionCollectionName { get; set; }
+
+        public string GroupConfigCollectionName { get; set; }
+
         public string ConnectionString { get; set; }
         public string DatabaseName { get; set; }
     }
@@ -25,6 +31,11 @@ namespace my_nomination_api.models
         string NominationsCollectionName { get; set; }
 
         string ProgramCategoryCollectionName { get; set; }
+
+        string GroupConfigCollectionName { get; set; }
+
+        string RegionCategoryCollectionName { get; set; }
+        string UserRegionCollectionName { get; set; }
 
         string ConnectionString { get; set; }
         string DatabaseName { get; set; }

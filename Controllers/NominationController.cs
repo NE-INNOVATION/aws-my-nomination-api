@@ -22,7 +22,6 @@ namespace my_nomination_api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         [Route("GetAllNominations")]
         public List<Nominations> GetAllNominations()
         {
@@ -31,7 +30,6 @@ namespace my_nomination_api.Controllers
 
         [HttpGet]
         [Route("GetNominations")]
-        [Authorize]
         public List<Nominations> GetNominations([FromQuery]string programId)
         {
             return _nominationService.GetProgramNominations(programId);
@@ -39,7 +37,6 @@ namespace my_nomination_api.Controllers
 
         [HttpGet]
         [Route("GetNominationDetails")]
-        [Authorize]
         public Nominations GetNominationDetails([FromQuery] string programId, [FromQuery] string EnterpriseId)
         {
             return _nominationService.GetNominationDetails(programId, EnterpriseId);
@@ -58,7 +55,6 @@ namespace my_nomination_api.Controllers
         }
 
         [Route("UpdateNominations")]
-        [Authorize]
         public ActionResult<Nominations> UpdateNominations([FromBody] Nominations nominations)
         {
             var nomination = _nominationService.GetProgramNominations(nominations.ProgramId).FirstOrDefault(x => x.EnterpriseId == nominations.EnterpriseId);
@@ -71,7 +67,6 @@ namespace my_nomination_api.Controllers
         }
 
         [Route("MoveNominations")]
-        [Authorize]
         public ActionResult<Boolean> MoveNominations([FromBody] MoveNominations moveNominations)
         {
             var isMoved = false;
@@ -87,7 +82,6 @@ namespace my_nomination_api.Controllers
         }
 
         [Route("DeleteNominations")]
-        [Authorize]
         public ActionResult<Nominations> DeleteNominations([FromBody] Nominations nominations)
         {
             var nomination = _nominationService.GetProgramNominations(nominations.ProgramId).FirstOrDefault(x => x.EnterpriseId == nominations.EnterpriseId);

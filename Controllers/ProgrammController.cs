@@ -22,15 +22,7 @@ namespace my_nomination_api.Controllers
         {
             _nominationService = nominationService;
         }
-
-        [HttpPost]
-        [Route("GetPrograms")]
-        [Authorize]
-        public List<NominationProgram> GetPrograms(User user)
-        {
-            return _nominationService.GetPrograms(user);            
-        }
-
+               
         [HttpGet]
         [Route("GetActivePrograms")]
         public List<NominationProgram> GetActivePrograms()
@@ -45,12 +37,11 @@ namespace my_nomination_api.Controllers
             return _nominationService.GetCompletedPrograms();
         }
 
-        [HttpPost]
-        [Route("GetProgramsByUserId")]
-        [Authorize]
-        public List<NominationProgram> GetProgramsByUserId(User user)
+        [HttpGet]
+        [Route("GetProgramsByUserRegion")]
+        public List<NominationProgram> GetProgramsByUserRegion(string regionId)
         {
-            return _nominationService.GetPrograms(user);
+            return _nominationService.GetProgramsByRegionId(regionId);
         }
 
         [HttpGet]
@@ -62,7 +53,6 @@ namespace my_nomination_api.Controllers
 
         [HttpGet]
         [Route("GetAllPrograms")]
-        [Authorize]
         public List<NominationProgram> GetAllPrograms()
         {
             return _nominationService.GetAllProgram();
@@ -77,15 +67,13 @@ namespace my_nomination_api.Controllers
 
         [HttpPost]
         [Route("GetAllProgramsCategories")]
-        [Authorize]
-        public List<ProgramCategory> GetAllProgramsCategories(User user)
+        public List<Category> GetAllProgramsCategories([FromBody] List<string> userGroups)
         {
-            return _nominationService.GetAllProgramCategories(user);
+            return _nominationService.GetAllProgramCategories(userGroups);
         }
 
         [HttpGet]
         [Route("GetProgramsForCategories")]
-        [Authorize]
         public List<NominationProgram> GetProgramsForCategories([FromQuery] string categoryId)
         {
             return _nominationService.GetProgramsForCategories(categoryId);
@@ -93,8 +81,7 @@ namespace my_nomination_api.Controllers
 
         [HttpGet]
         [Route("GetConfigurationForUi")]
-        [Authorize]
-        public List<NominationProgram> GetConfigurationForUi()
+         public List<NominationProgram> GetConfigurationForUi()
         {
             return _nominationService.GetAllProgram();
         }
@@ -106,7 +93,6 @@ namespace my_nomination_api.Controllers
              
         [HttpPost]
         [Route("CreateProgram")]
-        [Authorize]
         public NominationProgram CreateProgram(NominationProgram nominationProgram)
         {
             var program = _nominationService.GetProgramById(nominationProgram.ProgramId);
@@ -123,8 +109,7 @@ namespace my_nomination_api.Controllers
 
         [HttpPost]
         [Route("UpdateProgram")]
-        [Authorize]
-        public ActionResult<NominationProgram> UpdateProgram(NominationProgram nominationProgram)
+         public ActionResult<NominationProgram> UpdateProgram(NominationProgram nominationProgram)
         {
             var program = _nominationService.GetProgramById(nominationProgram.ProgramId);
             if (string.IsNullOrEmpty(nominationProgram.ProgramId) && program == null)

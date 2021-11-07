@@ -12,8 +12,9 @@ namespace my_nomination_api.Services
     {
         private readonly IMongoCollection<Nominations> _nominations;
         private readonly IMongoCollection<NominationProgram> _nominationProgram;
-        private readonly IMongoCollection<ProgramCategory> _categories;
+        private readonly IMongoCollection<Category> _categories;
         private readonly IMongoCollection<User> _users;
+        private readonly IMongoCollection<GroupConfig> _groupConfig;
 
         public NominationService(IMyNominationDatabaseSettings settings)
         {
@@ -23,7 +24,8 @@ namespace my_nomination_api.Services
             _nominationProgram = database.GetCollection<NominationProgram>(System.Environment.GetEnvironmentVariable("ProgramCollectionName") ?? settings.ProgramCollectionName);
             _nominations = database.GetCollection<Nominations>(System.Environment.GetEnvironmentVariable("NominationsCollectionName") ?? settings.NominationsCollectionName);
             _users = database.GetCollection<User>(System.Environment.GetEnvironmentVariable("UsersCollectionName") ?? settings.UsersCollectionName);
-            _categories = database.GetCollection<ProgramCategory>(System.Environment.GetEnvironmentVariable("ProgramCategoryCollectionName") ?? settings.ProgramCategoryCollectionName);
+            _categories = database.GetCollection<Category>(System.Environment.GetEnvironmentVariable("RegionCategoryCollectionName") ?? settings.RegionCategoryCollectionName);
+            _groupConfig = database.GetCollection<GroupConfig>(System.Environment.GetEnvironmentVariable("GroupConfigCollectionName") ?? settings.GroupConfigCollectionName);
         }
 
         public List<Nominations> GetAllNominations() =>
@@ -83,20 +85,40 @@ namespace my_nomination_api.Services
         public List<User> GetAllUsers() =>
        _users.Find(users => true).ToList();
 
-        public List<ProgramCategory> GetAllProgramCategories(User user)
+        private List<GroupConfig> GetAllGroup() =>
+     _groupConfig.Find(groups => true).ToList();
+
+        public List<Region> GetUserCategoriesByGroups(List<string> userGroups)
+        {
+            var opRegion = new List<Region>();
+            var groups = GetAllGroup();
+            foreach (var userRegion in userGroups)
+            {
+                var region = groups.Find(x => x.GroupId.ToString() == userRegion && x.IsRegion == true);
+                if (region == null) continue;
+                var regionName = region.GroupName.Split("_");
+                if (regionName.Length < 4) continue;
+                opRegion.Add(new Region { RegionId = region.GroupId.ToString(), RegionName = regionName[3] });
+            }
+
+            return opRegion;
+        }
+
+        public List<Category> GetAllProgramCategories(List<string> userGroups)
         {
             var categories = _categories.Find(category => true).ToList();
+            var regions = GetUserCategoriesByGroups(userGroups);
 
-            if (user.CategoryId.Contains("superadmin", StringComparer.OrdinalIgnoreCase))
+           if(regions.Exists(x=>x.RegionId == GroupCode.MN_NEIES_Administrator))
             {
                 return categories;
             }
 
-            var categoryOutput = new List<ProgramCategory>();
+            var categoryOutput = new List<Category>();
 
             foreach (var category in categories)
             {
-                if (user.CategoryId.Contains(category.CategoryId))
+                if (regions.Exists(x=>x.RegionId == category.RegionId.ToString()))
                 {
                     categoryOutput.Add(category);
                 }
@@ -167,20 +189,20 @@ namespace my_nomination_api.Services
         }
 
 
-        public List<NominationProgram> GetPrograms(User userInput)
+        public List<NominationProgram> GetProgramsByRegionId(string regionId)
         {
-            if (userInput.CategoryId.Contains("superadmin", StringComparer.OrdinalIgnoreCase))
+            var programsForCategory = GetAllProgram();
+            if (regionId == GroupCode.MN_NEIES_Administrator)
             {
-                return GetAllProgram();
+                return programsForCategory;
             }
 
-            var programsForCategory = new List<NominationProgram>();
-            foreach (var category in userInput.CategoryId)
+            var programs = new List<NominationProgram>();
+            foreach (var program in programsForCategory.FindAll(x=>x.RegionId == regionId))
             {
-                List<NominationProgram> categoryPrograms = _nominationProgram.Find<NominationProgram>(NominationProgram => NominationProgram.categoryId == category).ToList();
-                programsForCategory.AddRange(categoryPrograms);
+                programs.Add(program);
             }
-            return programsForCategory;
+            return programs;
         }
        
 

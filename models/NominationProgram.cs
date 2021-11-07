@@ -47,6 +47,9 @@ namespace my_nomination_api.models
 
         [BsonElement("category")]
         public string category { get; set; }
+
+        [BsonElement("regionId")]
+        public string RegionId { get; set; }
     }
 
     public class ProgramCategory
